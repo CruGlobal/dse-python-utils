@@ -12,7 +12,7 @@ To install the package, run the following command:
 
 ## Usage
 To use the package, import the desired functions from the appropriate subfolder. For example:
-`from cru-dse-utils import get_request` 
+`from cru_dse_utils import get_request` 
 
 Refer to the function docstring for instructions how to use the functions
 
