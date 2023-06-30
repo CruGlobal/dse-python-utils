@@ -1,22 +1,18 @@
 
 # dse-python-utils
-This is a package of useful functions developed by the Cru Data Science and Engineering team. The package includes the following subfolders:
+This is a package of useful functions developed by the Cru Data Sciences & Engineering team. The package includes the following files:
 
-- `data`: Contains functions for loading and preprocessing data.
-    - `general.py`: Contains general data extraction related functions.
-    - `bigquery.py`: Contains functions for bigquery operations.
-    - `dbt.py`: Contains functions for dbt operations.
-- `models`: Contains functions for building and training models.
-- `visualization`: Contains functions for creating visualizations of data and model results.
+- `general.py`: Contains general data extraction related functions.
+- `bigquery.py`: Contains functions for bigquery operations.
+- `dbt.py`: Contains functions for dbt operations.
 
 ## Installation
 To install the package, run the following command:
-`pip install dse-python-utils`
+`pip install cru-dse-utils`
 
 ## Usage
 To use the package, import the desired functions from the appropriate subfolder. For example:
-`from dse_python_utils.data.general import get_request` or 
-`from dse_python_utils import get_request`
+`from cru-dse-utils import get_request` 
 
 Refer to the function docstring for instructions how to use the functions
 

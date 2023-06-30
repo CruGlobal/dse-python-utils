@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cru-dse-utils"
+version = "0.1.0"
+description = "Python utils for Cru DSE team"
+readme = "README.md"
+authors = [{ name = "Cru/Tony Guan", email = "tony.guan@cru.org" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+dependencies = ["requests"]
+requires-python = ">=3.7"
+
+[project.optional-dependencies]
+build = ["build", "twine"]
+dev = ["pytest"]
+
+[project.urls]
+repository = "https://github.com/CruGlobal/dse-python-utils"
