@@ -7,6 +7,8 @@ name = "pypi"
 requests = "*"
 
 [dev-packages]
+build = "*"
+twine = "*"
 
 [requires]
 python_version = "3.11"
