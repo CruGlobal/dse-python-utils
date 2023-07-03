@@ -5,6 +5,8 @@ name = "pypi"
 
 [packages]
 requests = "*"
+python-dotenv = "*"
+google-auth = "*"
 
 [dev-packages]
 build = "*"
