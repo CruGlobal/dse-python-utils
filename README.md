@@ -3,6 +3,7 @@
 This is a package of useful functions developed by the Cru Data Sciences & Engineering team. The package includes the following files:
 
 - `general.py`: Contains general data extraction related functions.
+- `auth.py`: Contains functions for fetching credentials. 
 - `bigquery.py`: Contains functions for bigquery operations.
 - `dbt.py`: Contains functions for dbt operations.
 

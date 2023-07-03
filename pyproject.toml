@@ -7,7 +7,7 @@ name = "cru-dse-utils"
 version = "0.1.3"
 description = "Cru DSE Python Utils"
 readme = "README.md"
-authors = [{ name = "Cru/Tony Guan", email = "tony.guan@cru.org" }]
+authors = [{ name = "Cru DSE Team", email = "tony.guan@cru.org" }]
 license = { file = "LICENSE" }
 classifiers = [
     "License :: OSI Approved :: MIT License",
