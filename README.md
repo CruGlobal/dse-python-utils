@@ -1,5 +1,5 @@
 
-# dse-python-utils
+# cru-dse-utils
 This is a package of useful functions developed by the Cru Data Sciences & Engineering team. The package includes the following files:
 
 - `general.py`: Contains general data extraction related functions.

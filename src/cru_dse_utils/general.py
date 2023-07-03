@@ -5,7 +5,11 @@ import logging
 
 
 def get_request(
-    url: str, headers: Dict[str, str], params: Dict[Any, Any], logger: logging.Logger
+    url: str,
+    headers: Dict[str, str],
+    params: Dict[Any, Any],
+    logger: logging.Logger,
+    max_retries: int = 5,
 ) -> Union[requests.Response, None]:
     """
     Sends an HTTP GET request to the specified URL with the specified headers.
@@ -18,6 +22,9 @@ def get_request(
         url (str): The URL to send the request to.
         headers (Dict[str, str]): A dictionary of headers to include in the GET request.
         params (Dict[Any, Any]): A dictionary of parameters to include in the GET request.
+        logger (logging.Logger): The logger object to use for logging.
+        max_retries (int): The maximum number of times to retry the request if the response is not a valid JSON object.
+        Defaults to 5.
 
     Returns:
         requests.Response or None: The response object if the request is successful and returns valid JSON,
@@ -30,7 +37,6 @@ def get_request(
         requests.exceptions.RequestException: If there is a general request error.
     """
     logger = logging.getLogger("primary_logger")
-    max_retries = 5
     retries = 0
     while retries <= max_retries:
         try:
