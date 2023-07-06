@@ -2,9 +2,7 @@ import logging
 import requests
 from requests.models import Response
 from unittest.mock import Mock, patch
-
-# from google.oauth2.service_account import Credentials
-from src.cru_dse_utils import get_request
+from cru_dse_utils import get_request
 
 
 def test_get_request():
