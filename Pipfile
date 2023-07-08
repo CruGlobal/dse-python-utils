@@ -7,6 +7,8 @@ name = "pypi"
 requests = "*"
 google-auth = "*"
 google-cloud-bigquery = "*"
+pandas = "*"
+google-cloud-storage = "*"
 
 [dev-packages]
 build = "*"

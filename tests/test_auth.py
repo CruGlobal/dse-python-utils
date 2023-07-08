@@ -5,13 +5,14 @@ from unittest.mock import Mock, patch
 import pytest
 from google.oauth2.service_account import Credentials
 from cru_dse_utils import (
-    get_credentials_google,
-    get_authorized_session_google,
-    get_credentials_general,
+    get_google_credentials,
+    get_google_authorized_session,
+    get_general_credentials,
 )
 
 
-def test_get_credentials_google():
+# Test get_google_credentials for a successful request where everything works as expected.
+def test_get_google_credentials():
     # Simulate a base64-encoded JSON object
     credentials_dict = {"type": "service_account"}
     encoded_credentials = base64.b64encode(json.dumps(credentials_dict).encode("utf-8"))
@@ -20,7 +21,7 @@ def test_get_credentials_google():
         "google.oauth2.service_account.Credentials.from_service_account_info",
         return_value=Mock(spec=Credentials),
     ) as mock_from_service_account_info:
-        credentials = get_credentials_google("SECRET_NAME")
+        credentials = get_google_credentials("SECRET_NAME")
 
     assert credentials is not None
     mock_from_service_account_info.assert_called_once_with(
@@ -33,41 +34,47 @@ def test_get_credentials_google():
     )
 
 
-def test_get_credentials_google_missing_secret():
+# Test get_google_credentials for a failed request where the secret is missing.
+def test_get_google_credentials_missing_secret():
     # Test when the secret is missing
     with patch("os.getenv", return_value=None):
-        credentials = get_credentials_google("SECRET_NAME")
+        credentials = get_google_credentials("SECRET_NAME")
 
     assert credentials is None
 
 
-def test_get_credentials_google_invalid_secret():
+# Test get_google_credentials for a failed request where the secret is invalid.
+def test_get_google_credentials_invalid_secret():
     # Test when the secret is not a valid base64-encoded JSON object
     with patch("os.getenv", return_value="invalid"):
-        credentials = get_credentials_google("SECRET_NAME")
+        credentials = get_google_credentials("SECRET_NAME")
     assert credentials is None
 
 
+# Fixture to mock get_google_credentials
 @pytest.fixture
-def mock_get_credentials_google():
-    with patch("cru_dse_utils.auth.get_credentials_google") as mock_get_credentials:
+def mock_get_google_credentials():
+    with patch("cru_dse_utils.auth.get_google_credentials") as mock_get_credentials:
         yield mock_get_credentials
 
 
-def test_get_authorized_session_google_with_credentials(mock_get_credentials_google):
+# Test get_google_authorized_session for a successful request where everything works as expected.
+def test_get_google_authorized_session_with_credentials(mock_get_google_credentials):
     credentials_mock = "mock_credentials"
-    mock_get_credentials_google.return_value = credentials_mock
-    session = get_authorized_session_google("secret_name")
+    mock_get_google_credentials.return_value = credentials_mock
+    session = get_google_authorized_session("secret_name")
     assert session is not None
     assert session.credentials == credentials_mock
 
 
-def test_get_authorized_session_google_without_credentials(mock_get_credentials_google):
-    mock_get_credentials_google.return_value = None
-    session = get_authorized_session_google("secret_name")
+# Test get_google_authorized_session for a failed request where the credentials are missing.
+def test_get_google_authorized_session_without_credentials(mock_get_google_credentials):
+    mock_get_google_credentials.return_value = None
+    session = get_google_authorized_session("secret_name")
     assert session is None
 
 
+# Fixture to mock get_google_general_credentials
 @pytest.fixture
 def mock_os_getenv(monkeypatch):
     def mock_getenv(secret_name):
@@ -79,19 +86,22 @@ def mock_os_getenv(monkeypatch):
     monkeypatch.setattr(os, "getenv", mock_getenv)
 
 
-def test_get_credentials_general_with_existing_secret(mock_os_getenv):
+# Test get_general_credentials with a working secret.
+def test_get_general_credentials_with_existing_secret(mock_os_getenv):
     secret_name = "EXISTING_SECRET"
-    result = get_credentials_general(secret_name)
+    result = get_general_credentials(secret_name)
     assert result == "TestSecret"
 
 
-def test_get_credentials_general_with_non_existing_secret(mock_os_getenv):
+# Test get_general_credentials with a non-existing secret.
+def test_get_general_credentials_with_non_existing_secret(mock_os_getenv):
     secret_name = "NON_EXISTING_SECRET"
-    result = get_credentials_general(secret_name)
+    result = get_general_credentials(secret_name)
     assert result is None
 
 
-def test_get_credentials_general_with_invalid_secret_name():
+# Test get_general_credentials with an invalid secret.
+def test_get_general_credentials_with_invalid_secret_name():
     secret_name = "INVALID_SECRET_NAME"
-    result = get_credentials_general(secret_name)
+    result = get_general_credentials(secret_name)
     assert result is None

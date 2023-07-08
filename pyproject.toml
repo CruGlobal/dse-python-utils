@@ -14,7 +14,13 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
 ]
-dependencies = ["requests"]
+dependencies = [
+    "requests",
+    "google-auth",
+    "google-cloud-bigquery",
+    "google-cloud-storage",
+    "pandas",
+]
 requires-python = ">=3.7"
 
 [project.optional-dependencies]

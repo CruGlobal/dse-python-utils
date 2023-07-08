@@ -4,7 +4,7 @@ from requests.models import Response
 from unittest.mock import Mock, patch
 from cru_dse_utils import get_request
 
-
+# Test get_request for a successful request where everything works as expected.
 def test_get_request():
     mock_response = Mock(spec=Response)
     mock_response.status_code = 200
@@ -21,7 +21,7 @@ def test_get_request():
     assert result == mock_response
     mock_get.assert_called_once_with(url, headers=headers, params=params, timeout=60)
 
-
+# Test get_request for timeout error.
 def test_get_request_timeout_error():
     logger = logging.getLogger("test")
     url = "https://test.com"
@@ -33,7 +33,7 @@ def test_get_request_timeout_error():
     ):
         assert get_request(url, headers, params, logger) is None
 
-
+# Test get_request for connection error.
 def test_get_request_json_error():
     mock_response = Mock(spec=Response)
     mock_response.status_code = 200

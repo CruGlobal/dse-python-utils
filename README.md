@@ -5,6 +5,7 @@ This is a package of useful functions developed by the Cru Data Sciences & Engin
 - `general.py`: Contains general data extraction related functions.
 - `auth.py`: Contains functions for fetching credentials. 
 - `bigquery.py`: Contains functions for bigquery operations.
+- `gcs.py`: Contains functions for Google Cloud Storage operations.
 - `dbt.py`: Contains functions for dbt operations.
 
 ## Installation
