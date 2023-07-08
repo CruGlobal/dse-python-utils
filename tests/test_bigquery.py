@@ -206,7 +206,6 @@ def test_download_from_bigquery_as_dataframe(
         "dataset_id",
         "table_id",
         "secret_name",
-        mock_df,
     )
 
     # check that the mock objects were used as expected
@@ -226,7 +225,6 @@ def test_download_from_bigquery_as_dataframe_no_credentials(
     # setup the return values for the mock objects
     mock_get_google_credentials.return_value = None
     mock_logger = Mock()
-    mock_df = Mock(spec=pd.DataFrame)
     mock_getLogger.return_value = mock_logger
 
     # run the function with the mock objects
@@ -236,7 +234,6 @@ def test_download_from_bigquery_as_dataframe_no_credentials(
         "dataset_id",
         "table_id",
         "secret_name",
-        mock_df,
     )
 
     assert result is None

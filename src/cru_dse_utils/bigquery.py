@@ -174,7 +174,7 @@ def upload_dataframe_to_bigquery(
 
 
 def download_from_bigquery_as_dataframe(
-    project_id: str, dataset_id: str, table_id: str, secret_name: str, df: pd.DataFrame
+    project_id: str, dataset_id: str, table_id: str, secret_name: str
 ) -> Union[pd.DataFrame, None]:
     """
     Download data from a BigQuery table to a pandas DataFrame.
@@ -189,7 +189,6 @@ def download_from_bigquery_as_dataframe(
         table_id (str): The BigQuery table ID.
         secret_name (str): The name of the environment variable used for
         Google Cloud authentication.
-        df (pd.DataFrame): The pandas DataFrame containing the data to upload.
 
     Returns:
         Union[pd.DataFrame, None]: The pandas DataFrame containing the data
