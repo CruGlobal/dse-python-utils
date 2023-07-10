@@ -8,7 +8,6 @@ def get_request(
     url: str,
     headers: Dict[str, str],
     params: Dict[Any, Any],
-    logger: logging.Logger,
     max_retries: int = 5,
 ) -> Union[requests.Response, None]:
     """
