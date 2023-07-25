@@ -139,7 +139,7 @@ def dbt_run(account_id: str, job_id: str, secret_name: str) -> None:
     if run_id is None:
         logger.error(f"dbt run failed to start.")
         return
-    get_dbt_run_status(run_id, secret_name)
+    get_dbt_run_status(run_id, token)
     while True:
         time.sleep(30)
         status = get_dbt_run_status(run_id, token)
