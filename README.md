@@ -8,8 +8,6 @@ This is a package of useful functions developed by the Cru Data Sciences & Engin
 - `gcs.py`: Contains functions for Google Cloud Storage operations.
 - `dbt.py`: Contains functions for dbt operations.
 
-Latest version: 1.05
-
 ## Installation
 To install the package, run the following command:
 `pip install cru-dse-utils`
