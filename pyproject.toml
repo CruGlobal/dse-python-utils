@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cru-dse-utils"
-version = "0.1.5"
+version = "0.1.6"
 description = "Cru DSE Python Utils"
 readme = "README.md"
 authors = [{ name = "Cru DSE Team", email = "tony.guan@cru.org" }]
