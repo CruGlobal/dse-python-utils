@@ -110,21 +110,23 @@ def get_dbt_run_status(run_id: str, token: str) -> int:
     return status
 
 
-def dbt_run(account_id: str, job_id: str, secret_name: str) -> None:
+def dbt_run(
+    account_id: str, job_id: str, secret_name: str, max_retries: int = 3
+) -> None:
     """
-    Runs a dbt job and checks its status.
+    Runs a dbt job and checks its status, with retry logic.
 
     This function runs a dbt job by calling the `trigger_dbt_job()` function
     and then checks the status of the job by calling `get_dbt_run_status()`
-    function every 30 seconds until the job is completed succesufully or
-    failed. The function logs messages indicating the status of the dbt job
-    and whether it completed successfully or failed.
+    function every 30 seconds until the job is completed successfully,
+    failed, or cancelled. If the job fails, it will retry up to 'max_retries' times.
+    The function logs messages indicating the status of the dbt job and its final outcome.
 
     Args:
         account_id (str): The ID of the account in dbt Cloud.
         job_id (str): The ID of the dbt job to be triggered.
-        secret_name (str): The name of the environment variable used for
-        dbt Cloud API token.
+        secret_name (str): The name of the environment variable used for dbt Cloud API token.
+        max_retries (int): Maximum number of retries if the job fails. Default is 3.
 
     Returns:
         None
@@ -135,30 +137,46 @@ def dbt_run(account_id: str, job_id: str, secret_name: str) -> None:
     if token is None:
         logger.error(f"Failed to get dbt token with {secret_name}")
         return
-    run_id = trigger_dbt_job(account_id, job_id, token)
-    if run_id is None:
-        logger.error(f"dbt run failed to start.")
-        return
-    get_dbt_run_status(run_id, token)
-    while True:
-        time.sleep(30)
-        status = get_dbt_run_status(run_id, token)
-        status_str = ""
-        if status == 1:
-            status_str = "Queued"
-        elif status == 2:
-            status_str = "Starting"
-        elif status == 3:
-            status_str = "Running"
-        elif status == 10:
-            status_str = "Success"
-        elif status == 0:
-            status_str = "Status not available"
-        logger.info(f"dbt job status: {status} - {status_str}")
-        if status == 10:
-            logger.info(f"dbt job run completed successfully.")
-            break
-        elif status == 20:
-            logger.error(f"dbt job failed.")
-        elif status == 30:
-            logger.error(f"dbt job cancelled.")
+
+    retries = 0
+    while retries <= max_retries:
+        run_id = trigger_dbt_job(account_id, job_id, token)
+        if run_id is None:
+            logger.error(
+                f"dbt run failed to start. Retry {retries + 1} of {max_retries + 1}"
+            )
+            retries += 1
+            continue
+
+        while True:
+            time.sleep(30)
+            status = get_dbt_run_status(run_id, token)
+            status_str = {
+                0: "Status not available",
+                1: "Queued",
+                2: "Starting",
+                3: "Running",
+                10: "Success",
+                20: "Failed",
+                30: "Cancelled",
+            }.get(status, "Unknown")
+
+            logger.info(f"dbt job status: {status} - {status_str}")
+
+            if status == 10:
+                logger.info(f"dbt job run completed successfully.")
+                return  # Exit the function on success
+            elif status in (20, 30):  # Failed or Cancelled
+                if retries < max_retries:
+                    logger.warning(
+                        f"dbt job {status_str}. Retrying... (Attempt {retries + 1} of {max_retries})"
+                    )
+                    retries += 1
+                    break  # Break the inner loop to retry
+                else:
+                    logger.error(f"dbt job {status_str} after {max_retries} retries.")
+                    return  # Exit the function after max retries
+
+    logger.error(
+        f"dbt job failed to complete successfully after {max_retries} retries."
+    )
