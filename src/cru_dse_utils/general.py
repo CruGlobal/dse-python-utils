@@ -87,10 +87,16 @@ def get_request(
                             delay *= 2  # Double the delay period
                             continue  # Retry the same URL
                         else:
-                            raise
+                            logger.warning(
+                                f"HTTP error: {str(err)}. Retry in {delay*2} seconds..."
+                            )
+                            delay *= 2
+                            continue
                     break  # Break out of the retry loop if the request is successful
             else:
-                raise
+                logger.warning(f"HTTP error: {str(err)}. Retry in 3 minutes...")
+                retries += 1
+                time.sleep(180)
         except requests.exceptions.Timeout as e:
             logger.warning(f"Request timed out: {str(e)}. Retry in 1 minutes...")
             retries += 1
