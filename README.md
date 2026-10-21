@@ -18,6 +18,8 @@ To use the package, import the desired functions from the appropriate subfolder.
 
 Refer to the function docstring for instructions how to use the functions
 
+The dbt functions call the dbt Cloud API at `https://kw745.us1.dbt.com/api/v2` by default. Set the `DBT_BASE_URL` environment variable to use a different host.
+
 ## Contributing
 If you would like to contribute to the package, please follow these steps:
 
