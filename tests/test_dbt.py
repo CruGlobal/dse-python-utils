@@ -4,6 +4,12 @@ import requests
 from cru_dse_utils import get_dbt_job_list, trigger_dbt_job, get_dbt_run_status, dbt_run
 
 
+# Clear DBT_BASE_URL so tests use the default host unless they set it.
+@pytest.fixture(autouse=True)
+def clear_dbt_base_url(monkeypatch):
+    monkeypatch.delenv("DBT_BASE_URL", raising=False)
+
+
 # Fixture to setup variables for get_dbt_job_list
 @pytest.fixture
 def setup_variables_get_dbt_job_list():
@@ -31,7 +37,7 @@ def test_get_dbt_job_list(
     # Assert
     mock_get_credentials.assert_called_once_with(secret_name)
     mock_requests.get.assert_called_once_with(
-        f"https://cloud.getdbt.com/api/v2/accounts/{account_id}/jobs/",
+        f"https://kw745.us1.dbt.com/api/v2/accounts/{account_id}/jobs/",
         headers={
             "Authorization": f"Token fake_token",
             "Content-Type": "application/json",
@@ -84,7 +90,7 @@ def test_get_dbt_job_list_request_error(
     # Assert
     mock_get_credentials.assert_called_once_with(secret_name)
     mock_requests.get.assert_called_once_with(
-        f"https://cloud.getdbt.com/api/v2/accounts/{account_id}/jobs/",
+        f"https://kw745.us1.dbt.com/api/v2/accounts/{account_id}/jobs/",
         headers={
             "Authorization": f"Token fake_token",
             "Content-Type": "application/json",
@@ -125,6 +131,10 @@ def test_trigger_dbt_job(
 
     # Assert
     mock_post.assert_called_once()
+    assert (
+        mock_post.call_args.args[0]
+        == f"https://kw745.us1.dbt.com/api/v2/accounts/{account_id}/jobs/{job_id}/run/"
+    )
     assert result == run_id
 
 
@@ -143,7 +153,42 @@ def test_get_dbt_run_status(mock_logging, mock_get, setup_variables):
 
     # Assert
     mock_get.assert_called_once()
+    assert (
+        mock_get.call_args.args[0]
+        == f"https://kw745.us1.dbt.com/api/v2/accounts/10206/runs/{run_id}/"
+    )
     assert result == 10
+
+
+# Test that DBT_BASE_URL overrides the default host, set after import.
+@patch("cru_dse_utils.dbt.get_general_credentials")
+@patch("cru_dse_utils.dbt.requests")
+@patch("cru_dse_utils.dbt.logging")
+def test_dbt_base_url_override(
+    mock_logging, mock_requests, mock_get_credentials, monkeypatch, setup_variables
+):
+    # Arrange
+    account_id, job_id, secret_name, token, run_id = setup_variables
+    monkeypatch.setenv("DBT_BASE_URL", "https://example.dbt.com/api/v2/")
+    mock_get_credentials.return_value = token
+    mock_requests.get.return_value.json.return_value = {"data": {"status": 10}}
+    mock_requests.post.return_value.json.return_value = {"data": {"id": run_id}}
+
+    # Act
+    get_dbt_job_list(account_id, secret_name)
+    trigger_dbt_job(account_id, job_id, token)
+    get_dbt_run_status(run_id, token)
+
+    # Assert
+    get_urls = [c.args[0] for c in mock_requests.get.call_args_list]
+    assert get_urls == [
+        f"https://example.dbt.com/api/v2/accounts/{account_id}/jobs/",
+        f"https://example.dbt.com/api/v2/accounts/10206/runs/{run_id}/",
+    ]
+    assert (
+        mock_requests.post.call_args.args[0]
+        == f"https://example.dbt.com/api/v2/accounts/{account_id}/jobs/{job_id}/run/"
+    )
 
 
 # Test dbt_run for a successful request where everything works as expected.
